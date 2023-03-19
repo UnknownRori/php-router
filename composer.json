@@ -10,7 +10,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "UnknownRori\\Router\\Tests": "tests/"
+            "UnknownRori\\Router\\Tests\\": "tests/"
         }
     },
     "authors": [
