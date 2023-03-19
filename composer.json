@@ -8,6 +8,11 @@
             "UnknownRori\\Router\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "UnknownRori\\Router\\Tests": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "UnknownRori",
