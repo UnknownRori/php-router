@@ -8,6 +8,7 @@ use UnknownRori\Router\Contracts\FromArray;
 use UnknownRori\Router\Contracts\ToArray;
 use UnknownRori\Router\Exceptions\BadHttpMethodException;
 use UnknownRori\Router\Exceptions\InvalidRouteConstraintException;
+use UnknownRori\Router\Exceptions\RouteNotFoundException;
 
 class Routes implements ToArray, FromArray, Serializable
 {
@@ -162,5 +163,22 @@ class Routes implements ToArray, FromArray, Serializable
         $this->lastAdded->setName($name);
         $this->namedRoute[$name] = $this->lastAdded;
         return $this;
+    }
+
+    public function redirect(string $name, array $data = [])
+    {
+        if (!array_key_exists($name, $this->namedRoute))
+            throw new RouteNotFoundException(key: $name);
+
+        $route = $this->namedRoute[$name];
+        $url = $route->getUrl();
+        $routeConstraint = $route->getConstraints();
+
+        return preg_replace_callback("/{[a-zA-Z]+}/", function (array $matches) use ($data, $routeConstraint) {
+            $key = ltrim($matches[0], '{');
+            $key = rtrim($key, '}');
+
+            return $data[$key];
+        }, $url);
     }
 }
