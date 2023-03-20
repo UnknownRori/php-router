@@ -21,20 +21,28 @@ final class DynamicRouteTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->routes = new Routes();
-        $this->routes->get('/', fn () => "home");
-        $this->routes->get('/dashboard', fn () => "dashboard");
-        $this->routes->get('/posts', fn () => "posts");
-        $this->routes->get('/posts/{posts:alpha}', fn (string $post) => "post {$post}");
-        $this->routes->post('/posts/{posts:alpha}', fn (string $post) => "post {$post}");
-        $this->routes->get('/users/{name:alpha}/posts/{id:number}', fn (string $name, int $id) => "view posts id {$id} with author {$name}");
-        $this->routes->get('/users/{name:alpha}/posts/{id:number}/edit', fn (string $name, int $id) => "view edit form posts id {$id} with author {$name}");
-        $this->routes->post('/users/{name:alpha}/posts/{id:number}/edit', fn (string $name, int $id) => "post the edit to post id {$id} owned by {$name}");
-        $this->routes->delete('/users/{name:alpha}/posts/{id:number}/delete', fn (string $name, int $id) => "delete post id {$id} owned by {$name}");
-        $this->routes->get('/download/files', fn () => "download-files");
-        $this->routes->get('/download/files/{name:alpha}', fn (string $name) => $name);
-        $this->routes->get('/about', fn () => "about");
+        $routes = new Routes();
+        $routes->get('/', fn () => "home");
+        $routes->get('/dashboard', fn () => "dashboard");
+        $routes->get('/posts', fn () => "posts");
+        $routes->get('/posts/{posts}', fn (string $posts) => "posts {$posts}")
+            ->where(['posts' => 'alpha']);
+        $routes->post('/posts/{posts}', fn (string $posts) => "posts {$posts}")
+            ->where(['post' => 'alpha']);
+        $routes->get('/users/{name}/posts/{id}', fn (string $name, int $id) => "view posts id {$id} with author {$name}")
+            ->where(['name' => 'alpha', 'id' => 'numeric']);
+        $routes->get('/users/{name}/posts/{id}/edit', fn (string $name, int $id) => "view edit form posts id {$id} with author {$name}")
+            ->where(['name' => 'alpha', 'id' => 'number']);
+        $routes->post('/users/{name}/posts/{id}/edit', fn (string $name, int $id) => "post the edit to post id {$id} owned by {$name}")
+            ->where(['name' => 'alpha', 'id' => 'number']);
+        $routes->delete('/users/{name}/posts/{id}/delete', fn (string $name, int $id) => "delete post id {$id} owned by {$name}")
+            ->where(['name' => 'alpha', 'id' => 'number']);
+        $routes->get('/download/files', fn () => "download-files");
+        $routes->get('/download/files/{name}', fn (string $name) => $name)
+            ->where(['name' => 'alpha']);
+        $routes->get('/about', fn () => "about");
 
+        $this->routes = $routes;
         $this->resolver = new RouteResolver($this->routes);
     }
 
