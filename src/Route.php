@@ -15,6 +15,13 @@ class Route implements ToArray, FromArray, Serializable
     protected array  $middleware;
     protected string|array|Closure $handler;
 
+    /**
+     * Constraint that will be used in this route
+     *
+     * @var array<string>
+     */
+    protected array $constraints = [];
+
     public function __construct(string $method, string $url, string|callable|array $handler)
     {
         $this->url = $url;
@@ -41,6 +48,7 @@ class Route implements ToArray, FromArray, Serializable
             'method' => $this->method,
             'middleware' => $this->middleware,
             'handler' => $this->handler,
+            'constraints' => $this->constraints
         ];
     }
 
@@ -84,6 +92,11 @@ class Route implements ToArray, FromArray, Serializable
         return $this->handler;
     }
 
+    public function getConstraints(): array
+    {
+        return $this->constraints;
+    }
+
     public function setName(string $name)
     {
         $this->name = $name;
@@ -92,5 +105,17 @@ class Route implements ToArray, FromArray, Serializable
     public function addMiddleware(string $middleware)
     {
         $this->middleware[] = $middleware;
+    }
+
+    /**
+     * Register constraint to this route
+     *
+     * @param  array<string, string> $constraint
+     *
+     * @return void
+     */
+    public function addConstraint(array $constraint)
+    {
+        $this->constraints = array_merge($this->constraints, $constraint);
     }
 }
