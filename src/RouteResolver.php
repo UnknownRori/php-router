@@ -6,7 +6,6 @@ use ReflectionClass;
 use ReflectionFunction;
 use UnexpectedValueException;
 use UnknownRori\Router\Exceptions\BadHttpMethodException;
-use UnknownRori\Router\Exceptions\InvalidRouteBindingException;
 use UnknownRori\Router\Exceptions\RouteNotFoundException;
 use UnknownRori\Router\Utility\Url;
 
@@ -62,7 +61,7 @@ class RouteResolver
         $targetUrlArrayLen = count($targetUrlArray);
 
         $func = function (Route $route) use (&$additionalData, $url, $targetUrlArray, $targetUrlArrayLen) {
-            return self::checkRoute($route, $url, $targetUrlArray, $targetUrlArrayLen, $additionalData);
+            return $this->checkRoute($route, $url, $targetUrlArray, $targetUrlArrayLen, $additionalData);
         };
 
         $result = match ($method) {
@@ -76,13 +75,14 @@ class RouteResolver
         return $result;
     }
 
-    protected static function checkRoute(Route $route, string $url, array $targetUrlArray, int $targetUrlArrayLen, array &$additionalData): bool
+    protected function checkRoute(Route $route, string $url, array $targetUrlArray, int $targetUrlArrayLen, array &$additionalData): bool
     {
         if ($route->getUrl() == $url)
             return true;
 
         $routeUrlArray = Url::splitUrl($route->getUrl());
         $routeUrlArrayLen = count($routeUrlArray);
+        $routeConstraint = $route->getConstraints();
 
 
         if ($routeUrlArrayLen != $targetUrlArrayLen)
@@ -92,40 +92,27 @@ class RouteResolver
         $data = [];
         foreach ($routeUrlArray as $key => $routeUrl) {
             $targetUrl = $targetUrlArray[$key];
-
             if ($routeUrl == $targetUrl) {
-                $correctness++;
-            } else if (substr($routeUrl, -1) == '}') {
 
-                if (!str_contains($routeUrl, ':')) {
-                    $result = ltrim($routeUrl, '{');
-                    $result = rtrim($result, '}');
-                    $data[$result] = ltrim($targetUrl, "/");
-                    $correctness++;
-                    continue;
+                $correctness++;
+            } else if (substr($routeUrl, -1) == '}' && substr($routeUrl, 0, 1) == '{') {
+
+                $routeKey = ltrim($routeUrl, '{');
+                $routeKey = rtrim($routeKey, '}');
+                $result = ltrim($targetUrl, "/");
+
+
+                if (
+                    array_key_exists($routeKey, $routeConstraint) &&
+                    !call_user_func($this->routes->getConstraints($routeConstraint[$routeKey]), $result)
+                ) {
+                    break;
                 }
 
-                $result = explode(":", $routeUrl);
-                $right = rtrim($result[1], "}");
-                $left = ltrim($result[0], "{");
-
-                $param = ltrim($targetUrl, "/");
-                $result = match ($right) {
-                    "number" => ctype_digit($param) && settype($param, 'int'),
-                    "alphanumeric" => ctype_alnum($param),
-                    "alpha" => ctype_alpha($param),
-                    default => throw new InvalidRouteBindingException($param),
-                };
-
-
-                if ($result) {
-                    $data[$left] = $param;
-                    $correctness++;
-                } else
-                    break;
+                $data[$routeKey] = $result;
+                $correctness++;
             }
         }
-
         if ($correctness == $targetUrlArrayLen) {
             $additionalData = array_merge($additionalData, $data);
             return true;
