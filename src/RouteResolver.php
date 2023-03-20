@@ -4,10 +4,10 @@ namespace UnknownRori\Router;
 
 use ReflectionClass;
 use ReflectionFunction;
+use UnexpectedValueException;
 use UnknownRori\Router\Exceptions\BadHttpMethodException;
 use UnknownRori\Router\Exceptions\InvalidRouteBindingException;
 use UnknownRori\Router\Exceptions\RouteNotFoundException;
-use UnknownRori\Router\Exceptions\RouteParameterNotFound;
 use UnknownRori\Router\Utility\Url;
 
 class RouteResolver
@@ -31,7 +31,7 @@ class RouteResolver
         $collection = $this->matchRoute($method, $url, $additionalData);
         $route = $collection->first();
 
-        if ($route == null)
+        if (is_null($route))
             throw new RouteNotFoundException($url, $method);
 
         $additionalData = array_merge($this->additionalData, $additionalData);
@@ -99,9 +99,9 @@ class RouteResolver
 
                 if (!str_contains($routeUrl, ':')) {
                     $result = ltrim($routeUrl, '{');
-                    $result = rtrim($routeUrl, '}');
+                    $result = rtrim($result, '}');
                     $data[$result] = ltrim($targetUrl, "/");
-                    var_dump($data);
+                    $correctness++;
                     continue;
                 }
 
@@ -180,23 +180,32 @@ class RouteResolver
         return $reflectionClass->newInstance(...$param);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param  array<\ReflectionParameter> $parameterArray
+     * @param  array $additionalData
+     *
+     * @return array
+     */
     protected function getDependency(array $parameterArray, array $additionalData = []): array
     {
         $param = [];
 
         foreach ($parameterArray as $key => $value) {
-            // Why? PHP Just Why???
-            $additionalDataType = gettype($additionalData[$value->name]);
-            if ($additionalDataType == "integer")
-                $additionalDataType = "int";
+            if (!$value->hasType())
+                $param[$value->name] = $additionalData[$value->name];
 
-            if (
-                !array_key_exists($value->name, $additionalData) ||
-                $value->getType()->getName() != $additionalDataType
-            )
-                throw new RouteParameterNotFound($value->name, $value->getType()->getName());
+            $valType = $value->getType();
+            $data = $additionalData[$value->name];
+            $dataType = gettype($data);
+            $data = match ($valType) {
+                "int" => ctype_digit($data) ? intval($data) : throw new UnexpectedValueException("Key {$value->name} should be type of {$valType} but it was given {$dataType}"),
+                "float" | 'double' => ctype_digit($data) ? floatval($data) : throw new UnexpectedValueException("Key {$value->name} should be type of {$valType} but it was given {$dataType}"),
+                default => $data,
+            };
 
-            $param[$value->name] = $additionalData[$value->name];
+            $param[$value->name] = $data;
         }
 
         return $param;
