@@ -33,9 +33,10 @@ class Route implements ToArray, FromArray, Serializable
 
     public static function fromArray(array $deserialize): self
     {
-        $route = new Route($deserialize['url'], $deserialize['method'], $deserialize['handler']);
+        $route = new Route($deserialize['method'], $deserialize['url'], $deserialize['handler']);
         $route->middleware = $deserialize['middleware'];
         $route->name = $deserialize['name'];
+        $route->constraints = $deserialize['constraints'];
 
         return $route;
     }
