@@ -41,6 +41,11 @@ class Routes implements ToArray, FromArray, Serializable
         $this->lastAdded = null;
     }
 
+    /**
+     * Adding default constraint like `alphanum`, `alpha`, `numeric`
+     *
+     * @return self
+     */
     public function addDefaultConstraints(): self
     {
         return $this->constraint('alphanum', fn (string $s) => preg_match("/^[a-zA-Z0-9_-]+/", $s))
@@ -48,6 +53,13 @@ class Routes implements ToArray, FromArray, Serializable
             ->constraint('numeric', fn (string $s) => preg_match("/^[0-9_-]+/", $s));
     }
 
+    /**
+     * Create instance of `\UnknownRori\Router\Routes::class` from deserialized Routes in form of Array
+     *
+     * @param  array $deserialize
+     *
+     * @return self
+     */
     public static function fromArray(array $deserialize): self
     {
         $collect = new self();
@@ -60,6 +72,11 @@ class Routes implements ToArray, FromArray, Serializable
         return $collect;
     }
 
+    /**
+     * Serialize the `\UnknownRori\Router\Routes::class` in form of Array
+     *
+     * @return array
+     */
     public function toArray(): array
     {
         $result = [];
@@ -73,11 +90,23 @@ class Routes implements ToArray, FromArray, Serializable
         return $result;
     }
 
-    public function serialize()
+    /**
+     * Implementation of `\Serializable` interface, it will return JSON
+     *
+     * @return string
+     */
+    public function serialize(): string
     {
         return json_encode($this->toArray());
     }
 
+    /**
+     * Implementation of `\Serializable` interface, fill the current Routes with serialized Routes
+     *
+     * @param  string $data
+     *
+     * @return void
+     */
     public function unserialize(string $data)
     {
         $data = json_decode($data, true);
@@ -88,6 +117,14 @@ class Routes implements ToArray, FromArray, Serializable
         $this->constraints = $data['constraints'];
     }
 
+    /**
+     * Create new constraint
+     *
+     * @param  string   $key
+     * @param  callable $handler
+     *
+     * @return self
+     */
     public function constraint(string $key, callable $handler): self
     {
         $this->constraints[$key] = $handler;
@@ -95,6 +132,13 @@ class Routes implements ToArray, FromArray, Serializable
         return $this;
     }
 
+    /**
+     * Get specific constraint
+     *
+     * @param  string  $key
+     *
+     * @return Closure
+     */
     public function getConstraints(string $key): Closure
     {
         if (array_key_exists($key, $this->constraints)) {
@@ -104,6 +148,15 @@ class Routes implements ToArray, FromArray, Serializable
         throw new InvalidRouteConstraintException($key);
     }
 
+    /**
+     * Register new route, please use method that named using HTTP Method!
+     *
+     * @param  string                $method
+     * @param  string                $url
+     * @param  string|array|callable $handler
+     *
+     * @return self
+     */
     public function add(string $method, string $url, string|array|callable $handler): self
     {
         $route = new Route($method, $url, $handler);
@@ -121,21 +174,53 @@ class Routes implements ToArray, FromArray, Serializable
         return $this;
     }
 
+    /**
+     * Register new Route using HTTP Method GET
+     *
+     * @param  string                $url
+     * @param  string|array|callable $handler
+     *
+     * @return self
+     */
     public function get(string $url, string|array|callable $handler): self
     {
         return $this->add("GET", $url, $handler);
     }
 
+    /**
+     * Register new Route using HTTP Method POST
+     *
+     * @param  string                $url
+     * @param  string|array|callable $handler
+     *
+     * @return self
+     */
     public function post(string $url, string|array|callable $handler): self
     {
         return $this->add("POST", $url, $handler);
     }
 
+    /**
+     * Register new Route using HTTP Method PATCH
+     *
+     * @param  string                $url
+     * @param  string|array|callable $handler
+     *
+     * @return self
+     */
     public function patch(string $url, string|array|callable $handler): self
     {
         return $this->add("PATCH", $url, $handler);
     }
 
+    /**
+     * Register new Route using HTTP Method DELETE
+     *
+     * @param  string                $url
+     * @param  string|array|callable $handler
+     *
+     * @return self
+     */
     public function delete(string $url, string|array|callable $handler): self
     {
         return $this->add("DELETE", $url, $handler);
@@ -155,6 +240,13 @@ class Routes implements ToArray, FromArray, Serializable
         return $this;
     }
 
+    /**
+     * Register the last registered Route into named route so it can be referenced using name in some method
+     *
+     * @param  string $name
+     *
+     * @return self
+     */
     public function name(string $name): self
     {
         if (is_null($this->lastAdded))
@@ -165,6 +257,15 @@ class Routes implements ToArray, FromArray, Serializable
         return $this;
     }
 
+    /**
+     * Create URL using named Route and then passed some args for dynamically insert the data to the dynamic route
+     * ## Still Experimental API
+     *
+     * @param  string $name
+     * @param  array  $data
+     *
+     * @return void
+     */
     public function redirect(string $name, array $data = [])
     {
         if (!array_key_exists($name, $this->namedRoute))
