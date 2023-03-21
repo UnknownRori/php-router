@@ -81,10 +81,10 @@ class Routes implements ToArray, FromArray, Serializable
     public function unserialize(string $data)
     {
         $data = json_decode($data, true);
-        $this->GET = $data['GET'];
-        $this->POST = $data['POST'];
-        $this->PATCH = $data['PATCH'];
-        $this->DELETE = $data['DELETE'];
+        $this->GET = RouteArray::fromArray($data['GET']);
+        $this->POST = RouteArray::fromArray($data['POST']);
+        $this->PATCH = RouteArray::fromArray($data['PATCH']);
+        $this->DELETE = RouteArray::fromArray($data['DELETE']);
         $this->constraints = $data['constraints'];
     }
 

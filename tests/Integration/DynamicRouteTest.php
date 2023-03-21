@@ -22,6 +22,7 @@ final class DynamicRouteTest extends TestCase
     protected function setUp(): void
     {
         $routes = new Routes();
+        $routes->addDefaultConstraints();
         $routes->get('/', fn () => "home");
         $routes->get('/dashboard', fn () => "dashboard");
         $routes->get('/posts', fn () => "posts");
