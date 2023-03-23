@@ -119,4 +119,21 @@ class Route implements ToArray, FromArray, Serializable
     {
         $this->constraints = array_merge($this->constraints, $constraint);
     }
+
+    /**
+     * Generate URL using these route
+     *
+     * @param  array  $data
+     *
+     * @return string
+     */
+    public function generate(array $data = []): string
+    {
+        return preg_replace_callback("/{[a-zA-Z]+}/", function (array $matches) use ($data) {
+            $key = ltrim($matches[0], '{');
+            $key = rtrim($key, '}');
+
+            return $data[$key];
+        }, $this->url);
+    }
 }

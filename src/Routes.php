@@ -318,28 +318,19 @@ class Routes implements ToArray, FromArray, Serializable
     }
 
     /**
-     * Create URL using named Route and then passed some args for dynamically insert the data to the dynamic route
-     * ## Still Experimental API
+     * Generate URL using named route and some data as args for building the URL (needed for generating dynamic route)
+     * ## Experimental API
      *
      * @param  string $name
      * @param  array  $data
      *
-     * @return void
+     * @return string
      */
-    public function redirect(string $name, array $data = [])
+    public function generate(string $name, array $data = []): string
     {
         if (!array_key_exists($name, $this->namedRoute))
             throw new RouteNotFoundException(key: $name);
 
-        $route = $this->namedRoute[$name];
-        $url = $route->getUrl();
-        $routeConstraint = $route->getConstraints();
-
-        return preg_replace_callback("/{[a-zA-Z]+}/", function (array $matches) use ($data, $routeConstraint) {
-            $key = ltrim($matches[0], '{');
-            $key = rtrim($key, '}');
-
-            return $data[$key];
-        }, $url);
+        return $this->namedRoute[$name]->generate($data);
     }
 }
