@@ -7,8 +7,11 @@ use UnknownRori\Router\RouteResolver;
 use UnknownRori\Router\Routes;
 
 /**
- * @covers \UnknownRori\Router\RouteCollection
  * @covers \UnknownRori\Router\RouteResolver
+ * @covers \UnknownRori\Router\Utility\URL
+ * @covers \UnknownRori\Router\RouteArray
+ * @covers \UnknownRori\Router\Routes
+ * @covers \UnknownRori\Router\Route
  */
 final class StaticRoutingTest extends TestCase
 {
