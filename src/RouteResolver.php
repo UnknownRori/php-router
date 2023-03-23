@@ -27,7 +27,7 @@ class RouteResolver
 
     public function resolve(string $method, string $url, array $additionalData = []): mixed
     {
-        $collection = $this->matchRoute($method, $url, $additionalData);
+        $collection = $this->match($method, $url, $additionalData);
         $route = $collection->first();
 
         if (is_null($route))
@@ -53,7 +53,7 @@ class RouteResolver
         return $additionalData['response'];
     }
 
-    public function matchRoute(string $method, string $url, array &$additionalData): RouteArray
+    public function match(string $method, string $url, array &$additionalData): RouteArray
     {
         $method = strtoupper($method);
 
