@@ -30,15 +30,18 @@ class Routes implements ToArray, FromArray, Serializable
      * @var array<string, \UnknownRori\Router\Route::class>
      */
     public array                $namedRoute = [];
-    protected ?Route            $lastAdded;
+    protected ?Route            $lastAdded = null;
 
-    public function __construct()
-    {
-        $this->GET = new RouteArray();
-        $this->POST = new RouteArray();
-        $this->PATCH = new RouteArray();
-        $this->DELETE = new RouteArray();
-        $this->lastAdded = null;
+    public function __construct(
+        RouteArray $GET = new RouteArray(),
+        RouteArray $POST = new RouteArray(),
+        RouteArray $PATCH = new RouteArray(),
+        RouteArray $DELETE = new RouteArray(),
+    ) {
+        $this->GET = $GET;
+        $this->POST = $POST;
+        $this->PATCH = $PATCH;
+        $this->DELETE = $DELETE;
     }
 
     /**
@@ -62,14 +65,12 @@ class Routes implements ToArray, FromArray, Serializable
      */
     public static function fromArray(array $deserialize): self
     {
-        $collect = new self();
-
-        $collect->GET = RouteArray::fromArray($deserialize['GET']);
-        $collect->POST = RouteArray::fromArray($deserialize['POST']);
-        $collect->PATCH = RouteArray::fromArray($deserialize['PATCH']);
-        $collect->DELETE = RouteArray::fromArray($deserialize['DELETE']);
-
-        return $collect;
+        return new self(
+            GET: RouteArray::fromArray($deserialize['GET']),
+            POST: RouteArray::fromArray($deserialize['POST']),
+            PATCH: RouteArray::fromArray($deserialize['PATCH']),
+            DELETE: RouteArray::fromArray($deserialize['DELETE']),
+        );
     }
 
     /**
