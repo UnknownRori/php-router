@@ -5,6 +5,7 @@ namespace UnknownRori\Router;
 use Closure;
 use Serializable;
 use UnknownRori\Router\Contracts\FromArray;
+use UnknownRori\Router\Contracts\RoutesContracts;
 use UnknownRori\Router\Contracts\ToArray;
 use UnknownRori\Router\Exceptions\BadHttpMethodException;
 use UnknownRori\Router\Exceptions\InvalidRouteConstraintException;
@@ -13,7 +14,7 @@ use UnknownRori\Router\Exceptions\RouteNotFoundException;
 /**
  * A collection of routes, it's used for route matching using RouteResolver
  */
-class Routes implements ToArray, FromArray, Serializable
+class Routes implements ToArray, FromArray, Serializable, RoutesContracts
 {
     /**
      * Registered Constraints and it's handler
@@ -319,6 +320,20 @@ class Routes implements ToArray, FromArray, Serializable
         }
 
         return $this;
+    }
+
+    /**
+     * Register a resource route, and the controller must implement specific method for each resource manipulation
+     * it similar to [Laravel Resource Route](https://laravel.com/docs/10.x/controllers#actions-handled-by-resource-controller)
+     * 
+     * @param  string     $name
+     * @param  string     $controller
+     *
+     * @return self
+     */
+    public function resource(string $url, string $controller): RouteResourcePending
+    {
+        return new RouteResourcePending($this, $url, $controller);
     }
 
     /**
