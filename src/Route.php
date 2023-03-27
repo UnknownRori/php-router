@@ -7,6 +7,9 @@ use Serializable;
 use UnknownRori\Router\Contracts\FromArray;
 use UnknownRori\Router\Contracts\ToArray;
 
+/**
+ * A class representing individual route
+ */
 class Route implements ToArray, FromArray, Serializable
 {
     protected string $url;

@@ -7,6 +7,9 @@ use Serializable;
 use UnknownRori\Router\Contracts\FromArray;
 use UnknownRori\Router\Contracts\ToArray;
 
+/**
+ * A simple wrapper for array containing route
+ */
 class RouteArray extends ArrayObject implements ToArray, FromArray, Serializable
 {
     /**

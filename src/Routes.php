@@ -10,6 +10,9 @@ use UnknownRori\Router\Exceptions\BadHttpMethodException;
 use UnknownRori\Router\Exceptions\InvalidRouteConstraintException;
 use UnknownRori\Router\Exceptions\RouteNotFoundException;
 
+/**
+ * A collection of routes, it's used for route matching using RouteResolver
+ */
 class Routes implements ToArray, FromArray, Serializable
 {
     /**

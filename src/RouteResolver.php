@@ -9,6 +9,9 @@ use UnknownRori\Router\Exceptions\BadHttpMethodException;
 use UnknownRori\Router\Exceptions\RouteNotFoundException;
 use UnknownRori\Router\Utility\Url;
 
+/**
+ * A simple route matching using Routes as args when constructed
+ */
 class RouteResolver
 {
     public readonly Routes $routes;
