@@ -4,7 +4,7 @@ namespace UnknownRori\Router;
 
 use UnknownRori\Router\Contracts\RoutesContracts;
 
-class RouteResourcePending implements RoutesContracts
+class ResourceRoutePending implements RoutesContracts
 {
 
     protected Routes $routes;
@@ -47,7 +47,7 @@ class RouteResourcePending implements RoutesContracts
 
     /**
      * @param string $name
-     * @return RouteResourcePending
+     * @return ResourceRoutePending
      */
     public function name(string $name): self
     {
@@ -73,7 +73,7 @@ class RouteResourcePending implements RoutesContracts
     /**
      *
      * @param array $constraintKey
-     * @return RouteResourcePending
+     * @return ResourceRoutePending
      */
     public function where(array $constraintKey): self
     {
@@ -85,7 +85,7 @@ class RouteResourcePending implements RoutesContracts
     /**
      *
      * @param array|string $placeholder
-     * @return RouteResourcePending
+     * @return ResourceRoutePending
      */
     public function whereAlphaNum(array|string $placeholder): self
     {
@@ -103,7 +103,7 @@ class RouteResourcePending implements RoutesContracts
     /**
      *
      * @param array|string $placeholder
-     * @return RouteResourcePending
+     * @return ResourceRoutePending
      */
     public function whereAlpha(array|string $placeholder): self
     {
@@ -121,7 +121,7 @@ class RouteResourcePending implements RoutesContracts
     /**
      *
      * @param array|string $placeholder
-     * @return RouteResourcePending
+     * @return ResourceRoutePending
      */
     public function whereNumeric(array|string $placeholder): self
     {

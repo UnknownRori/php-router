@@ -331,9 +331,9 @@ class Routes implements ToArray, FromArray, Serializable, RoutesContracts
      *
      * @return self
      */
-    public function resource(string $url, string $controller): RouteResourcePending
+    public function resource(string $url, string $controller): ResourceRoutePending
     {
-        return new RouteResourcePending($this, $url, $controller);
+        return new ResourceRoutePending($this, $url, $controller);
     }
 
     /**
