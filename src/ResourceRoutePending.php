@@ -3,9 +3,11 @@
 namespace UnknownRori\Router;
 
 use UnknownRori\Router\Contracts\RoutesContracts;
+use UnknownRori\Router\Traits\DefaultConstraintTrait;
 
 class ResourceRoutePending implements RoutesContracts
 {
+    use DefaultConstraintTrait;
 
     protected Routes $routes;
     protected string $url;
@@ -78,60 +80,6 @@ class ResourceRoutePending implements RoutesContracts
     public function where(array $constraintKey): self
     {
         $this->constraint[] = $constraintKey;
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param array|string $placeholder
-     * @return ResourceRoutePending
-     */
-    public function whereAlphaNum(array|string $placeholder): self
-    {
-        if (!is_array($placeholder)) {
-            return $this->where([$placeholder => 'alphanum']);
-        }
-
-        foreach ($placeholder as $key => $value) {
-            $this->where([$value => 'alphanum']);
-        }
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param array|string $placeholder
-     * @return ResourceRoutePending
-     */
-    public function whereAlpha(array|string $placeholder): self
-    {
-        if (!is_array($placeholder)) {
-            return $this->where([$placeholder => 'alpha']);
-        }
-
-        foreach ($placeholder as $key => $value) {
-            $this->where([$value => 'alpha']);
-        }
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param array|string $placeholder
-     * @return ResourceRoutePending
-     */
-    public function whereNumeric(array|string $placeholder): self
-    {
-        if (!is_array($placeholder)) {
-            return $this->where([$placeholder => 'numeric']);
-        }
-
-        foreach ($placeholder as $key => $value) {
-            $this->where([$value => 'numeric']);
-        }
 
         return $this;
     }
