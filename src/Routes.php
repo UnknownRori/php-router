@@ -266,13 +266,6 @@ class Routes implements ToArray, FromArray, Serializable, RoutesContracts
     }
 
     /**
-     *
-     * @return self
-     */
-    {
-    }
-
-    /**
      * Register a resource route, and the controller must implement specific method for each resource manipulation
      * it similar to [Laravel Resource Route](https://laravel.com/docs/10.x/controllers#actions-handled-by-resource-controller)
      * 
@@ -284,6 +277,20 @@ class Routes implements ToArray, FromArray, Serializable, RoutesContracts
     public function resource(string $url, string $controller): ResourceRoutePending
     {
         return new ResourceRoutePending($this, $url, $controller);
+    }
+
+    /**
+     * Register a api resource route, and the controller must implement specific method for each resource manipulation
+     * it similar to [Laravel Resource Route](https://laravel.com/docs/10.x/controllers#actions-handled-by-resource-controller)
+     * 
+     * @param  string     $name
+     * @param  string     $controller
+     *
+     * @return self
+     */
+    public function apiResource(string $url, string $controller): ResourceRoutePending
+    {
+        return (new ResourceRoutePending($this, $url, $controller,))->except(['create', 'edit']);
     }
 
     /**
