@@ -50,7 +50,7 @@ echo $result;
 
 ```bash
 # clone the repository
-> git clone https://github.com/UnknownRori/php-routes
+> git clone https://github.com/UnknownRori/php-router
 
 # enter directory
 > cd php-routes
