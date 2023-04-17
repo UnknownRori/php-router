@@ -44,12 +44,13 @@ class RouteResolver
         // Do some middleware stuff
 
         $handler = $route->getHandler();
+        $runner = new Runner($additionalData);
         if (is_array($handler))
-            $additionalData['response'] = $this->callMethod($handler[0], $handler[1], $additionalData);
+            $additionalData['response'] = $runner->method($handler[0], $handler[1]);
         else if (is_callable($handler))
-            $additionalData['response'] = $this->callFunction($handler, $additionalData);
+            $additionalData['response'] = $runner->function($handler);
         else
-            $additionalData['response'] = $this->callInvoke($handler, $additionalData);
+            $additionalData['response'] = $runner->invoke($handler);
 
         // Do some middleware stuff
 
@@ -122,82 +123,5 @@ class RouteResolver
         }
 
         return false;
-    }
-
-    protected function callInvoke(string $handler, array $additionalData = []): mixed
-    {
-        $classReflect = new ReflectionClass($handler);
-        $invokeReflect = $classReflect->getMethod('__invoke');
-        $invokeParam = $invokeReflect->getParameters();
-        $param = $this->getDependency($invokeParam, $additionalData);
-
-        return $invokeReflect->invoke($classReflect->newInstance(), ...$param);
-    }
-
-    protected function callFunction(callable $function, array $additionalData = []): mixed
-    {
-        $functionReflection = new ReflectionFunction($function);
-        $parameter = $functionReflection->getParameters();
-        $param = $this->getDependency($parameter, $additionalData);
-
-        return $function(...$param);
-    }
-
-    protected function callMethod(string $namespace, string $method, array $additionalData = []): mixed
-    {
-        $reflectionClass = new ReflectionClass($namespace);
-        $instance = $this->newInstanceFromConstructor($reflectionClass, $additionalData);
-        if (is_null($instance))
-            $instance = $reflectionClass->newInstance();
-
-        $methodReflection = $reflectionClass->getMethod($method);
-        $methodParam = $methodReflection->getParameters();
-        $param = $this->getDependency($methodParam, $additionalData);
-
-        return $instance->$method(...$param);
-    }
-
-    protected function newInstanceFromConstructor(ReflectionClass $reflectionClass, array $additionalData = []): ?object
-    {
-        $constructorReflection = $reflectionClass->getConstructor();
-
-        if (is_null($constructorReflection))
-            return null;
-
-        $constructorParam = $constructorReflection->getParameters();
-        $param = $this->getDependency($constructorParam, $additionalData);
-
-        return $reflectionClass->newInstance(...$param);
-    }
-
-    /**
-     * Undocumented function
-     *
-     * @param  array<\ReflectionParameter> $parameterArray
-     * @param  array $additionalData
-     *
-     * @return array
-     */
-    protected function getDependency(array $parameterArray, array $additionalData = []): array
-    {
-        $param = [];
-
-        foreach ($parameterArray as $key => $value) {
-            if (!$value->hasType())
-                $param[$value->name] = $additionalData[$value->name];
-
-            $valType = $value->getType();
-            $data = $additionalData[$value->name];
-            $dataType = gettype($data);
-            $data = match ($valType) {
-                "int" => ctype_digit($data) ? intval($data) : throw new UnexpectedValueException("Key {$value->name} should be type of {$valType} but it was given {$dataType}"),
-                "float" | 'double' => ctype_digit($data) ? floatval($data) : throw new UnexpectedValueException("Key {$value->name} should be type of {$valType} but it was given {$dataType}"),
-                default => $data,
-            };
-
-            $param[$value->name] = $data;
-        }
-
-        return $param;
     }
 }
