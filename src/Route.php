@@ -6,12 +6,15 @@ use Closure;
 use Serializable;
 use UnknownRori\Router\Contracts\FromArray;
 use UnknownRori\Router\Contracts\ToArray;
+use UnknownRori\Router\Traits\SerializeTrait;
 
 /**
  * A class representing individual route
  */
 class Route implements ToArray, FromArray, Serializable
 {
+    use SerializeTrait;
+
     protected string $url;
     protected string $method;
     protected string $name;
@@ -54,11 +57,6 @@ class Route implements ToArray, FromArray, Serializable
             'handler' => $this->handler,
             'constraints' => $this->constraints
         ];
-    }
-
-    public function serialize()
-    {
-        return json_encode($this->toArray());
     }
 
     public function unserialize(string $data)

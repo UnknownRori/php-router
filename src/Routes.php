@@ -11,13 +11,14 @@ use UnknownRori\Router\Exceptions\BadHttpMethodException;
 use UnknownRori\Router\Exceptions\InvalidRouteConstraintException;
 use UnknownRori\Router\Exceptions\RouteNotFoundException;
 use UnknownRori\Router\Traits\DefaultConstraintTrait;
+use UnknownRori\Router\Traits\SerializeTrait;
 
 /**
  * A collection of routes, it's used for route matching using RouteResolver
  */
 class Routes implements ToArray, FromArray, Serializable, RoutesContracts
 {
-    use DefaultConstraintTrait;
+    use DefaultConstraintTrait, SerializeTrait;
 
     /**
      * Registered Constraints and it's handler
@@ -96,16 +97,6 @@ class Routes implements ToArray, FromArray, Serializable, RoutesContracts
         $result['constraints'] = $this->constraints;
 
         return $result;
-    }
-
-    /**
-     * Implementation of `\Serializable` interface, it will return JSON
-     *
-     * @return string
-     */
-    public function serialize(): string
-    {
-        return json_encode($this->toArray());
     }
 
     /**
