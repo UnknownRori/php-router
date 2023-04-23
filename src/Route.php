@@ -104,9 +104,14 @@ class Route implements ToArray, FromArray, Serializable
         $this->name = $name;
     }
 
-    public function addMiddleware(string $middleware)
+    public function addMiddleware(string|array $middleware)
     {
-        $this->middleware[] = $middleware;
+        if (is_string($middleware)) {
+            $this->middleware[] = $middleware;
+            return;
+        }
+
+        $this->middleware = array_merge($this->middleware, $middleware);
     }
 
     /**

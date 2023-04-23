@@ -256,6 +256,15 @@ class Routes implements ToArray, FromArray, Serializable, RoutesContracts
         return $this;
     }
 
+    public function middleware(string|array $name): self
+    {
+        if (is_null($this->lastAdded))
+            return $this;
+
+        $this->lastAdded->addMiddleware($name);
+        return $this;
+    }
+
     /**
      * Register a resource route, and the controller must implement specific method for each resource manipulation
      * it similar to [Laravel Resource Route](https://laravel.com/docs/10.x/controllers#actions-handled-by-resource-controller)
