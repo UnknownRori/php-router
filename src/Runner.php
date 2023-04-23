@@ -110,6 +110,12 @@ class Runner
         $param = [];
 
         foreach ($parameters as $key => $value) {
+            if (!array_key_exists($value->name, $this->additionalData)) {
+                $param[$value->name] = null;
+
+                continue;
+            }
+
             if (!$value->hasType())
                 $param[$value->name] = $this->additionalData[$value->name];
 
