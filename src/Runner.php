@@ -37,7 +37,7 @@ class Runner
      *
      * @param  string|callable $name
      *
-     * @return void
+     * @return mixed
      */
     public function function(string|callable $name)
     {
@@ -52,7 +52,7 @@ class Runner
      *
      * @param  string $namespace
      *
-     * @return void
+     * @return mixed
      */
     public function invoke(string $namespace)
     {
@@ -65,7 +65,7 @@ class Runner
      * @param  string $namespace
      * @param  string $method
      *
-     * @return void
+     * @return mixed
      */
     public function method(string $namespace, string $method)
     {
